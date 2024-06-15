@@ -77,21 +77,15 @@ ORDER BY average_rabies DESC
 LIMIT 10;
 
 ================
-// p_4a
+// p_4
 ALTER TABLE infectious_cases_normalized
-ADD first_jan DATE,
-ADD curr_date DATE,
 ADD year_difference INT;
 
-------------
-// p_4b
 SET SQL_SAFE_UPDATES = 0;
 
 UPDATE infectious_cases_normalized
-SET 
-	first_jan = DATE(CONCAT(Year, '-01-01')),
-    curr_date = CURDATE(),
-    year_difference = TIMESTAMPDIFF(YEAR, DATE(CONCAT(Year, '-01-01')), CURDATE())
+SET
+  year_difference = TIMESTAMPDIFF(YEAR, DATE(CONCAT(Year, '-01-01')), CURDATE())
 WHERE Year IS NOT NULL;
 
 SET SQL_SAFE_UPDATES = 1;
@@ -108,9 +102,16 @@ NO SQL
 BEGIN
     RETURN TIMESTAMPDIFF(YEAR, DATE(CONCAT(year, '-01-01')), CURDATE());
 END //
+
 DELIMITER ;
 
-SELECT CalculateDateDifference(1996);
+SET SQL_SAFE_UPDATES = 0;
+
+UPDATE infectious_cases_normalized
+SET
+  year_difference = CalculateDateDifference(Year);
+
+SET SQL_SAFE_UPDATES = 1;
 
 ------------
 // p_5b
