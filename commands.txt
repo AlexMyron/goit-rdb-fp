@@ -6,7 +6,7 @@ USE pandemic;
 // p_2a
 CREATE TABLE countries (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    country_code VARCHAR(8) UNIQUE,
+    country_code VARCHAR(8) NOT NULL,
     country_name VARCHAR(55) NOT NULL
 );
 
@@ -20,26 +20,24 @@ FROM infectious_cases;
 // p_2c
 CREATE TABLE infectious_cases_normalized (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    Entity VARCHAR(45),
-    Code CHAR(8),
+    countries_id INT NOT NULL,
     Year INT,
-    Number_yaws INT,
+    Number_yaws text,
     polio_cases INT,
     cases_guinea_worm INT,
-    Number_rabies INT,
-    Number_malaria INT,
-    Number_hiv INT,
-    Number_tuberculosis INT,
-    Number_smallpox INT,
-    Number_cholera_cases INT,
-    FOREIGN KEY (Code) REFERENCES countries(country_code)
+    Number_rabies VARCHAR(45),
+    Number_malaria VARCHAR(45),
+    Number_hiv VARCHAR(45),
+    Number_tuberculosis VARCHAR(45),
+    Number_smallpox VARCHAR(45),
+    Number_cholera_cases VARCHAR(45),
+    FOREIGN KEY (countries_id) REFERENCES countries(id)
 );
 
 ------------
 // p_2d
 INSERT INTO infectious_cases_normalized (
-    Entity,
-    Code,
+	countries_id,
     Year,
     Number_yaws,
     polio_cases,
@@ -52,20 +50,19 @@ INSERT INTO infectious_cases_normalized (
     Number_cholera_cases
 )
 SELECT DISTINCT 
-    Entity,
-    Code,
+	c.id,
     Year,
-    NULLIF(Number_yaws, '') AS Number_yaws,
-    NULLIF(polio_cases, '') AS polio_cases,
-    NULLIF(cases_guinea_worm, '') AS cases_guinea_worm,
-    NULLIF(Number_rabies, '') AS Number_rabies,
-    NULLIF(Number_malaria, '') AS Number_malaria,
-    NULLIF(Number_hiv, '') AS Number_hiv,
-    NULLIF(Number_tuberculosis, '') AS Number_tuberculosis,
-    NULLIF(Number_smallpox, '') AS Number_smallpox,
-    NULLIF(Number_cholera_cases, '') AS Number_cholera_cases
-FROM 
-    infectious_cases;
+    Number_yaws,
+    polio_cases,
+    cases_guinea_worm, 
+    Number_rabies,
+    Number_malaria, 
+    Number_hiv,
+    Number_tuberculosis, 
+    Number_smallpox, 
+    Number_cholera_cases 
+FROM infectious_cases ic
+INNER JOIN countries c ON c.country_code=ic.code AND c.country_name=ic.Entity;
 
 ================
 // p_3
